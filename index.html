@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OnlyUs — Supabase</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#6b7280;--line:#e6e9ef;--brand:#6d5dfc;--brand2:#8b7cff;--danger:#e5484d;--shadow:0 10px 30px #1b255912}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}.app{min-height:100vh}
+.top{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 24px;position:sticky;top:0;z-index:20}.logo{font-size:25px;font-weight:800;color:var(--brand)}.top .spacer{flex:1}
+.btn{border-radius:12px;padding:10px 15px;background:#eef0f6;color:var(--text);font-weight:650}.btn.primary{background:var(--brand);color:white}.btn.danger{background:#fff0f0;color:var(--danger)}.icon{background:transparent;font-size:21px}
+.layout{max-width:1180px;margin:auto;display:grid;grid-template-columns:230px minmax(0,680px) 230px;gap:20px;padding:22px 16px}.side{position:sticky;top:86px;height:max-content}.nav{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;box-shadow:var(--shadow)}.nav button{display:block;width:100%;text-align:left;background:transparent;padding:12px;border-radius:11px;color:var(--text)}.nav button:hover{background:#f0efff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:18px;margin-bottom:16px}.profileHero{overflow:hidden;padding:0}.cover{height:210px;background:linear-gradient(135deg,#dcd8ff,#f0f2ff);position:relative}.cover img{width:100%;height:100%;object-fit:cover}.avatar{width:118px;height:118px;border-radius:50%;border:5px solid white;object-fit:cover;background:#e9ebf2}.profileHead{display:flex;gap:18px;align-items:flex-end;padding:0 22px 20px;margin-top:-58px;position:relative}.profileInfo h1{margin:0 0 3px}.muted{color:var(--muted);font-size:14px}.field{margin:10px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;background:white}.field textarea{min-height:100px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--brand)}.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#f2efff,#f8faff)}.authbox{width:min(440px,100%);background:white;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:24px;padding:30px}.authbox h1{margin:0 0 7px}.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);margin:14px 0}.check input{margin-top:3px}.error{color:var(--danger);font-size:13px;margin:8px 0}
+.composer textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:16px;padding:15px;font-size:16px;resize:none}.composer .tools{display:flex;justify-content:space-between;align-items:center;margin-top:10px}.feedpost{padding:0;overflow:hidden}.posthead{display:flex;gap:11px;padding:16px}.miniavatar{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#e9ebf2}.postbody{padding:0 16px 15px;white-space:pre-wrap;overflow-wrap:anywhere}.postmedia{width:100%;max-height:620px;object-fit:cover;background:#eee}.postactions{display:flex;gap:4px;border-top:1px solid var(--line);padding:8px 12px}.postactions button{background:transparent;padding:9px 11px;border-radius:10px}.postactions button:hover{background:#f3f4f8}.comments{padding:0 16px 16px}.comment{display:flex;gap:9px;margin-top:10px}.commentbubble{background:#f1f3f7;border-radius:15px;padding:8px 11px;flex:1}.commentform{display:flex;gap:8px;margin-top:10px}.commentform input{flex:1;border:1px solid var(--line);border-radius:20px;padding:10px 13px}.stories{display:flex;gap:10px;overflow:auto}.story{min-width:110px;height:150px;border-radius:16px;overflow:hidden;position:relative;background:linear-gradient(145deg,#dcd8ff,#f1f2f6);border:1px solid var(--line)}.story img{width:100%;height:100%;object-fit:cover}.story span{position:absolute;bottom:8px;left:8px;color:white;font-size:12px;font-weight:700;text-shadow:0 1px 5px #000}.modal{position:fixed;inset:0;background:#0b102b66;display:grid;place-items:center;z-index:50;padding:20px}.modalbox{width:min(620px,100%);max-height:90vh;overflow:auto;background:white;border-radius:20px;padding:22px}.rightbox{padding:14px}.empty{padding:35px;text-align:center;color:var(--muted)}
+.toast{position:fixed;right:18px;bottom:18px;background:#172033;color:white;padding:12px 15px;border-radius:12px;z-index:100;box-shadow:var(--shadow)}
+.setup{border:1px dashed #b8b4ff;background:#f7f5ff;color:#4037a5}.small{font-size:12px}
+@media(max-width:950px){.layout{grid-template-columns:1fr}.side{display:none}.layout main{max-width:700px;margin:auto;width:100%}.top{padding:0 14px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const SUPABASE_URL='https://dealwgscoxoepjjnmolf.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_P02I8TfsKV-UC6CNVuJs8Q_cz1yop3u';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const BUCKETS={profile:'profile-media',post:'post-media',story:'story-media'};
+let state={session:null,profile:null,route:'feed',posts:[],stories:[],comments:{},loading:true};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),3000)}
+function avatar(p){return p?.avatar_url?`<img class="miniavatar" src="${esc(p.avatar_url)}">`:`<div class="miniavatar"></div>`}
+function profileName(p){return esc(p?.display_name||p?.username||'Usuário')}
+function username(p){return p?.username?`@${esc(p.username)}`:''}
+
+async function init(){
+  sb.auth.onAuthStateChange(async(_e,s)=>{state.session=s; await refresh();});
+  const {data}=await sb.auth.getSession(); state.session=data.session; await refresh();
+}
+async function refresh(){
+  state.loading=false;
+  if(!state.session){renderAuth();return}
+  await loadProfile();
+  if(!state.profile){renderProfileSetup();return}
+  await Promise.all([loadPosts(),loadStories()]);
+  renderApp();
+}
+async function loadProfile(){
+  const {data,error}=await sb.from('profiles').select('*').eq('id',state.session.user.id).maybeSingle();
+  if(error){console.error(error);toast('Erro ao carregar perfil: '+error.message);return}
+  state.profile=data;
+}
+async function loadPosts(){
+  const {data,error}=await sb.from('posts').select('*,profiles(id,display_name,username,avatar_url)').order('created_at',{ascending:false}).limit(50);
+  if(error){console.error(error);state.posts=[];return}
+  state.posts=data||[];
+  const ids=state.posts.map(p=>p.id);
+  if(ids.length){
+    const {data:c}=await sb.from('comments').select('*,profiles(display_name,username,avatar_url)').in('post_id',ids).order('created_at');
+    state.comments={};(c||[]).forEach(x=>(state.comments[x.post_id]??=[]).push(x));
+  }
+}
+async function loadStories(){
+  const {data,error}=await sb.from('stories').select('*,profiles(display_name,username,avatar_url)').gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false});
+  if(error){state.stories=[];return} state.stories=data||[];
+}
+function renderAuth(){
+ root.innerHTML=`<div class="auth"><div class="authbox">
+ <div class="logo">OnlyUs.</div><h1>${state.route==='register'?'Criar conta':'Entrar'}</h1>
+ <p class="muted">${state.route==='register'?'Sua conta usa o Supabase Auth. O perfil público será criado depois da confirmação do e-mail.':'Entre com seu e-mail e senha.'}</p>
+ ${state.route==='register'?`<div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="email"></div>
+ <div class="field"><label>@username</label><input id="username" placeholder="seunome"></div>
+ <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="new-password"></div>
+ <div class="field"><label>Confirmar senha</label><input id="password2" type="password"></div>
+ <label class="check"><input id="terms" type="checkbox"> <span>Aceito os termos de uso e a política de privacidade.</span></label>
+ <button class="btn primary" style="width:100%" onclick="register()">Criar conta</button>
+ <p class="muted">Já tem conta? <button class="btn" onclick="state.route='login';renderAuth()">Entrar</button></p>`
+ :`<div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="email"></div>
+ <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password"></div>
+ <button class="btn primary" style="width:100%" onclick="login()">Entrar</button>
+ <p class="muted">Não tem conta? <button class="btn" onclick="state.route='register';renderAuth()">Criar conta</button></p>`}
+ </div></div>`;
+}
+async function register(){
+ const email=$('email').value.trim(),u=$('username').value.trim().toLowerCase().replace(/^@/,'').replace(/[^a-z0-9._-]/g,'');
+ const p=$('password').value,p2=$('password2').value;
+ if(!email||!u||!p)return toast('Preencha e-mail, username e senha.');
+ if(p!==p2)return toast('As senhas não coincidem.');
+ if(!$('terms').checked)return toast('Aceite os termos para continuar.');
+ const {data,error}=await sb.auth.signUp({email,password:p,options:{data:{username:u},emailRedirectTo:location.origin+location.pathname}});
+ if(error)return toast(error.message);
+ if(data.session){toast('Conta criada.');return}
+ root.innerHTML=`<div class="auth"><div class="authbox"><div class="logo">OnlyUs.</div><h1>Confirme seu e-mail</h1><p>Enviamos um link de confirmação para <b>${esc(email)}</b>. Depois de confirmar, volte ao OnlyUs para concluir seu perfil.</p><button class="btn" onclick="state.route='login';renderAuth()">Voltar ao login</button></div></div>`;
+}
+async function login(){
+ const email=$('email').value.trim(),password=$('password').value;
+ const {error}=await sb.auth.signInWithPassword({email,password});
+ if(error)return toast(error.message);
+}
+async function logout(){await sb.auth.signOut()}
+function renderProfileSetup(){
+ root.innerHTML=`<div class="auth"><div class="authbox"><div class="logo">OnlyUs.</div><h1>Crie seu perfil</h1><p class="muted">Seu username reservado no cadastro: @${esc(state.session.user.user_metadata?.username||'')}. Agora complete os dados públicos.</p>
+ <div class="field"><label>Nome</label><input id="pname"></div><div class="field"><label>@username</label><input id="puser" value="${esc(state.session.user.user_metadata?.username||'')}"></div>
+ <div class="field"><label>Data de nascimento</label><input id="birth" type="date"></div><div class="field"><label>Cidade</label><input id="city"></div>
+ <button class="btn primary" style="width:100%" onclick="saveProfileSetup()">Continuar</button></div></div>`;
+}
+async function saveProfileSetup(){
+ const display_name=$('pname').value.trim(),username=$('puser').value.trim().toLowerCase().replace(/^@/,'').replace(/[^a-z0-9._-]/g,''),birth_date=$('birth').value,city=$('city').value.trim();
+ if(!display_name||!username||!birth_date||!city)return toast('Preencha todos os campos.');
+ const {data:existing}=await sb.from('profiles').select('id').eq('username',username).maybeSingle();
+ if(existing&&existing.id!==state.session.user.id)return toast('Esse username já está em uso.');
+ const {error}=await sb.from('profiles').upsert({id:state.session.user.id,display_name,username,birth_date,city},{onConflict:'id'});
+ if(error)return toast(error.message);await refresh();
+}
+function renderApp(){
+ root.innerHTML=`<div class="app"><header class="top"><div class="logo">OnlyUs.</div><div class="spacer"></div><span class="muted">${username(state.profile)}</span><button class="btn" onclick="go('profile')">Meu perfil</button><button class="btn danger" onclick="logout()">Sair</button></header>
+ <div class="layout"><aside class="side"><div class="nav"><button onclick="go('feed')">🏠 Feed</button><button onclick="go('profile')">👤 Meu perfil</button><button onclick="openSettings()">⚙️ Configurações</button></div></aside>
+ <main>${state.route==='profile'?profilePage():feedPage()}</main><aside class="side"><div class="card rightbox"><b>OnlyUs.</b><p class="muted">Seu espaço social conectado ao Supabase.</p></div></aside></div></div>`;
+}
+function feedPage(){
+ return `<div class="card setup small">Arquitetura ativa: Auth + Profiles + Posts + Comments + Reactions + Stories + Storage. O feed começa vazio e só mostra dados reais da sua conta/banco.</div>
+ <div class="card"><h3 style="margin-top:0">Stories</h3><div class="stories"><div class="story" onclick="storyModal()"><div style="height:100%;display:grid;place-items:center;font-size:30px">＋</div><span>Seu story</span></div>${state.stories.map(s=>`<div class="story" onclick="viewStory('${s.id}')">${s.media_url?`<img src="${esc(s.media_url)}">`:''}<span>${profileName(s.profiles)}</span></div>`).join('')}</div></div>
+ <div class="card composer"><textarea id="postText" placeholder="No que você está pensando?"></textarea><div class="tools"><label class="btn">📷 <input id="postFile" type="file" accept="image/*" hidden onchange="showFile(this)"></label><span id="fileName" class="muted">Adicionar foto</span><button class="btn primary" onclick="createPost()">Publicar</button></div></div>
+ ${state.posts.length?state.posts.map(postCard).join(''):`<div class="card empty">Seu feed está vazio. Publique algo para começar.</div>`}`;
+}
+function postCard(p){
+ const cs=state.comments[p.id]||[];
+ return `<article class="card feedpost"><div class="posthead">${avatar(p.profiles)}<div><b>${profileName(p.profiles)}</b><div class="muted">${username(p.profiles)} · ${new Date(p.created_at).toLocaleString('pt-BR')}</div></div></div>
+ ${p.content?`<div class="postbody">${esc(p.content)}</div>`:''}${p.media_url?`<img class="postmedia" src="${esc(p.media_url)}" alt="">`:''}
+ <div class="postactions"><button onclick="react('${p.id}','like')">👍 Curtir</button><button onclick="focusComment('${p.id}')">💬 Comentar</button>${p.user_id===state.session.user.id?`<button onclick="deletePost('${p.id}')">Excluir</button>`:''}</div>
+ <div class="comments">${cs.map(c=>`<div class="comment">${avatar(c.profiles)}<div class="commentbubble"><b>${profileName(c.profiles)}</b><br>${esc(c.content)}</div></div>`).join('')}
+ <div class="commentform"><input id="comment-${p.id}" placeholder="Escreva um comentário..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addComment('${p.id}')}"><button class="btn" onclick="addComment('${p.id}')">Enviar</button></div></div></article>`;
+}
+function profilePage(){
+ const p=state.profile;
+ return `<div class="card profileHero"><div class="cover">${p.cover_url?`<img src="${esc(p.cover_url)}">`:''}</div><div class="profileHead">${p.avatar_url?`<img class="avatar" src="${esc(p.avatar_url)}">`:`<div class="avatar"></div>`}<div class="profileInfo"><h1>${profileName(p)}</h1><div class="muted">${username(p)} · ${esc(p.city||'')}</div></div><div style="margin-left:auto"><button class="btn" onclick="openSettings()">Editar perfil</button></div></div></div>
+ <div class="card"><h3>Sobre</h3><p>${esc(p.relationship_type||'')}</p><p class="muted">${esc(p.relationship_person_name||'')}${p.relationship_start_date?' · desde '+new Date(p.relationship_start_date+'T00:00:00').toLocaleDateString('pt-BR'):''}</p></div>`;
+}
+function showFile(i){$('fileName').textContent=i.files[0]?.name||'Adicionar foto'}
+async function uploadFile(file,bucket,folder){
+ const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=`${state.session.user.id}/${folder}-${crypto.randomUUID()}.${ext}`;
+ const {error}=await sb.storage.from(bucket).upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});
+ if(error)throw error;const {data}=sb.storage.from(bucket).getPublicUrl(path);return data.publicUrl;
+}
+async function createPost(){
+ const content=$('postText').value.trim(),file=$('postFile').files[0];
+ if(!content&&!file)return toast('Escreva algo ou adicione uma foto.');
+ try{let media_url=null;if(file)media_url=await uploadFile(file,BUCKETS.post,'post');
+ const {error}=await sb.from('posts').insert({user_id:state.session.user.id,content:content||null,media_url,media_type:file?'image':null});
+ if(error)throw error;await loadPosts();renderApp();toast('Publicado.')}catch(e){toast(e.message)}
+}
+async function addComment(post_id){
+ const input=$(`comment-${post_id}`),content=input.value.trim();if(!content)return;
+ const {error}=await sb.from('comments').insert({post_id,user_id:state.session.user.id,content});
+ if(error)return toast(error.message);input.value='';await loadPosts();renderApp();
+}
+async function react(post_id,reaction){
+ const {error}=await sb.from('post_reactions').upsert({post_id,user_id:state.session.user.id,reaction},{onConflict:'post_id,user_id'});
+ if(error)return toast(error.message);toast('Reação registrada.');
+}
+async function deletePost(id){
+ if(!confirm('Excluir esta publicação?'))return;const {error}=await sb.from('posts').delete().eq('id',id).eq('user_id',state.session.user.id);if(error)return toast(error.message);await loadPosts();renderApp();
+}
+function focusComment(id){setTimeout(()=>document.getElementById('comment-'+id)?.focus(),50)}
+function storyModal(){
+ $('root').insertAdjacentHTML('beforeend',`<div class="modal" id="modal"><div class="modalbox"><div class="row"><h2>Novo story</h2><button class="btn" onclick="closeModal()">Fechar</button></div><div class="field"><label>Texto (opcional)</label><textarea id="storyText" placeholder="Escreva algo..."></textarea></div><div class="field"><label>Foto</label><input id="storyFile" type="file" accept="image/*"></div><button class="btn primary" onclick="createStory()">Publicar story</button></div></div>`);
+}
+async function createStory(){
+ const file=$('storyFile').files[0],textv=$('storyText').value.trim();if(!file&&!textv)return toast('Adicione uma foto ou texto.');
+ try{let media_url=null;if(file)media_url=await uploadFile(file,BUCKETS.story,'story');const {error}=await sb.from('stories').insert({user_id:state.session.user.id,media_url,media_type:file?'image':null,text_content:textv||null,expires_at:new Date(Date.now()+86400000).toISOString()});if(error)throw error;closeModal();await loadStories();renderApp();}catch(e){toast(e.message)}
+}
+function viewStory(id){const s=state.stories.find(x=>x.id===id);if(!s)return;$('root').insertAdjacentHTML('beforeend',`<div class="modal" id="modal"><div class="modalbox" style="text-align:center">${s.media_url?`<img style="max-width:100%;max-height:65vh" src="${esc(s.media_url)}">`:''}<h3>${profileName(s.profiles)}</h3><p>${esc(s.text_content||'')}</p><button class="btn" onclick="closeModal()">Fechar</button></div></div>`)}
+function closeModal(){$('modal')?.remove()}
+async function openSettings(){
+ const p=state.profile;
+ $('root').insertAdjacentHTML('beforeend',`<div class="modal" id="modal"><div class="modalbox"><div class="row"><h2>Editar perfil</h2><button class="btn" onclick="closeModal()">Fechar</button></div>
+ <div class="field"><label>Nome</label><input id="sname" value="${esc(p.display_name||'')}"></div><div class="field"><label>@username</label><input id="suser" value="${esc(p.username||'')}"></div><div class="field"><label>Cidade</label><input id="scity" value="${esc(p.city||'')}"></div>
+ <div class="field"><label>Status de relacionamento</label><select id="srel"><option value="">Não informado</option><option>Solteiro(a)</option><option>Namorando</option><option>Casado(a)</option><option>União estável</option><option>Noivo(a)</option><option>Divorciado(a)</option><option>Viúvo(a)</option></select></div>
+ <div class="field"><label>Pessoa marcada / nome</label><input id="sperson" value="${esc(p.relationship_person_name||'')}"></div><div class="field"><label>Data de início</label><input id="sdate" type="date" value="${esc(p.relationship_start_date||'')}"></div>
+ <div class="field"><label>Foto de perfil</label><input id="savatar" type="file" accept="image/*"></div><div class="field"><label>Capa</label><input id="scover" type="file" accept="image/*"></div>
+ <button class="btn primary" onclick="saveSettings()">Salvar alterações</button></div></div>`);
+ $('srel').value=p.relationship_type||'';
+}
+async function saveSettings(){
+ try{
+  const username=$('suser').value.trim().toLowerCase().replace(/^@/,'').replace(/[^a-z0-9._-]/g,'');
+  const {data:other}=await sb.from('profiles').select('id').eq('username',username).neq('id',state.session.user.id).maybeSingle();if(other)return toast('Username já está em uso.');
+  let avatar_url=state.profile.avatar_url,cover_url=state.profile.cover_url;
+  if($('savatar').files[0])avatar_url=await uploadFile($('savatar').files[0],BUCKETS.profile,'avatar');
+  if($('scover').files[0])cover_url=await uploadFile($('scover').files[0],BUCKETS.profile,'cover');
+  const patch={display_name:$('sname').value.trim(),username,city:$('scity').value.trim(),relationship_type:$('srel').value,relationship_person_name:$('sperson').value.trim()||null,relationship_start_date:$('sdate').value||null,avatar_url,cover_url,updated_at:new Date().toISOString()};
+  const {error}=await sb.from('profiles').update(patch).eq('id',state.session.user.id);if(error)throw error;
+  closeModal();await refresh();toast('Perfil atualizado.');
+ }catch(e){toast(e.message)}
+}
+function go(r){state.route=r;renderApp()}
+init();
+</script>
+</body></html>
